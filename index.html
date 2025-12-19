@@ -6,9 +6,9 @@
 <p>Genesys Cloud Web Messenger</p>
 </body>
 
-<input id="msg" placeholder="Type message here" />
-<button onclick="startConversation()">Start Conversation</button>
-<button onclick="sendMessage()">Send Message</button>
+<h2>Send a Message</h2>
+<input id="msgInput" type="text" placeholder="Type your message">
+<button onclick="sendMessage()">Send</button>
   
 <script type="text/javascript" charset="utf-8">
   (function (g, e, n, es, ys) {
@@ -23,44 +23,12 @@
     environment: 'prod-apne1',
     deploymentId: 'be7b456d-7625-4f4f-83b3-ed30ebf47cc2'
   });
+  
+  
+    function sendMessage() {
+      const text = document.getElementById('msgInput').value;
+      Genesys("command", "MessagingService.sendMessage", { message: text });
+    }
+
 </script>   
-
-  <script>
-/* Start Messaging Service */
-Genesys("command", "MessagingService.start");
-
-/* Start Conversation */
-function startConversation() {
-  Genesys("command", "MessagingService.startConversation",
-    {},
-    function () {
-      console.log("Conversation started");
-    },
-    function (err) {
-      console.error("Failed to start conversation", err);
-    }
-  );
-}
-
-/* Send Message */
-function sendMessage() {
-  var text = document.getElementById("msg").value;
-  if (!text) return;
-
-  Genesys("command", "MessagingService.sendMessage",
-    { body: text },
-    function () {
-      console.log("Message sent to Genesys Cloud");
-    },
-    function (err) {
-      console.error("Send failed", err);
-    }
-  );
-}
-
-/* Receive Messages */
-Genesys("subscribe", "MessagingService.messagesReceived", function (e) {
-  console.log("Message received from Genesys:", e);
-});
-</script>
 </html>
