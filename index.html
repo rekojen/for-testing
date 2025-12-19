@@ -43,13 +43,7 @@
     function sendMessage() {
       const text = document.getElementById('msgInput').value.trim();
       if (!text) return;
-
-      // ✅ FIX #1 & #2:
-      // - Use the recommended payload shape { message: { text } }
-      // - Do NOT append here; the messagesReceived subscription will render it,
-      //   avoiding duplicate lines in the incoming box.
-      Genesys("command", "MessagingService.sendMessage", { message: { text } });
-
+      Genesys("command", "MessagingService.sendMessage", { message: text });
       document.getElementById('msgInput').value = "";
     }
 
@@ -58,10 +52,6 @@
       const msgs = Array.isArray(data?.messages) ? data.messages : [];
       msgs.forEach(m => {
         if (typeof m?.text === 'string' && m.text.length > 0) {
-          // Optional: show who sent it based on direction
-          const prefix = m?.direction === 'Outbound' ? 'Agent' :
-                         m?.direction === 'Inbound' ? 'You' : 'Message';
-          append((prefix ? (prefix + ': ') : '') + m.text);
         }
       });
     });
