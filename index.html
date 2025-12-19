@@ -3,7 +3,7 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Genesys Subscribe (Inbound Only)</title>
+  <title>Genesys Subscribe (Text Only)</title>
   <style>
     #incomingBox { width: 100%; height: 160px; }
   </style>
@@ -17,7 +17,7 @@
   <textarea id="incomingBox" readonly placeholder="Inbound text will appear here"></textarea>
 
   <script>
-    // Load Genesys Web Messenger (adjust env/deploymentId if needed)
+    // Load Genesys Web Messenger
     (function (g, e, n, es, ys) {
       g['_genesysJs'] = e;
       g[e] = g[e] || function () { (g[e].q = g[e].q || []).push(arguments); };
@@ -33,31 +33,29 @@
       deploymentId: 'be7b456d-7625-4f4f-83b3-ed30ebf47cc2'
     });
 
-    function appendIncoming(line) {
+    function append(line) {
       const box = document.getElementById('incomingBox');
       box.value += (box.value ? "\n" : "") + line;
       box.scrollTop = box.scrollHeight;
     }
 
+    // Send message from input box
     function sendMessage() {
       const text = document.getElementById('msgInput').value.trim();
       if (!text) return;
       Genesys("command", "MessagingService.sendMessage", { message: text });
+      append("You: " + text);
       document.getElementById('msgInput').value = "";
     }
 
-    // Subscribe and append only **Inbound** messages
+    // Subscribe and append only message.text
     Genesys("subscribe", "MessagingService.messagesReceived", function({ data }) {
       const msgs = Array.isArray(data?.messages) ? data.messages : [];
       msgs.forEach(m => {
-        const direction = m?.channel?.direction; // "Inbound" or "Outbound"
-        const text = m?.text;
-
-        // Only show agent/bot/system inbound messages
-        if (direction === "Inbound" && typeof text === "string" && text.length > 0) {
-          appendIncoming("Genesys: " + text);
+        if (typeof m?.text === 'string' && m.text.length > 0) {
+          append(m.text);
         }
       });
     });
-  </script>
-</</body>
+   </script>
+</body>
