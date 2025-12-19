@@ -12,6 +12,9 @@
   <h3>Send a Message</h3>
   <input id="msgInput" type="text" placeholder="Type your message">
   <button onclick="sendMessage()">Send</button>
+  
+  <h3>Subscribe to Messages</h3>  <title>Genesys Subscribe Button</title>
+  <button onclick="subscribeMessages()">Start Listening</button>
 
   <h3>Responses</h3>
   <textarea id="log" readonly placeholder="Inbound messages will appear here"></textarea>
@@ -48,13 +51,13 @@
       document.getElementById('msgInput').value = "";
     }
 
-    // Always listen and append inbound messages
-    Genesys("subscribe", "MessagingService.messagesReceived", function (evt) {
-      if (!Array.isArray(evt?.messages)) return;
-      evt.messages.forEach(m => {
-        const txt = m?.text || (m ? JSON.stringify(m) : "");
-        if (txt) appendToLog("Agent: " + txt);
+
+    function subscribeMessages() {
+      Genesys("subscribe", "MessagingService.messagesReceived", function({ data }) {
+        console.log("Inbound message data:", data);
       });
-       });
+      console.log("Subscription added. Check console for incoming messages.");
+    }
+
   </script>
 </body>
