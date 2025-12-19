@@ -9,7 +9,12 @@
 <h2>Send a Message</h2>
 <input id="msgInput" type="text" placeholder="Type your message">
 <button onclick="sendMessage()">Send</button>
-  
+
+
+<h3>Response</h3>
+<textarea id="responseBox" rows="4" cols="50" readonly placeholder="Inbound messages will appear here"></textarea>
+
+
 <script type="text/javascript" charset="utf-8">
   (function (g, e, n, es, ys) {
     g['_genesysJs'] = e;
@@ -29,6 +34,19 @@
       const text = document.getElementById('msgInput').value;
       Genesys("command", "MessagingService.sendMessage", { message: text });
     }
+	
+	
+Genesys("subscribe", "MessagingService.messagesReceived", function (evt) {
+      const box = document.getElementById('responseBox');
+      if (Array.isArray(evt?.messages) && evt.messages.length) {
+        const last = evt.messages[evt.messages.length - 1];
+        const text = last?.text || JSON.stringify(last);
+        box.value = text;
+      } else {
+        box.value = "Message received (no text payload).";
+      }
+    });
+
 
 </script>   
 </html>
