@@ -52,6 +52,7 @@
       const msgs = Array.isArray(data?.messages) ? data.messages : [];
       msgs.forEach(m => {
         if (typeof m?.text === 'string' && m.text.length > 0) {
+          append(m.text);
         }
       });
     });
